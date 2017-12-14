@@ -16,15 +16,22 @@ public class ElectoralMap{
         private Color color;
         private double[] xCors;
         private double[] yCors;
+        private String decision;
 
         public Subregion(double[] xs, double[] ys) {
             xCors = xs;
             yCors = ys;
         }
+
+        public double[] getxCors(){
+            return xCors;
+        }
+        public double[] getyCors(){
+            return yCors;
+        }
     }
 
         public void getGeoData(String fileName) throws Exception{
-            ArrayList<Subregion> subs = new ArrayList<>();
             double[] bounds = new double[4];
             File inputFile = new File("input/" + fileName);
             Scanner inputObject = new Scanner(inputFile);
@@ -43,6 +50,7 @@ public class ElectoralMap{
 
 
             while(inputObject.hasNextLine()){
+                ArrayList<Subregion> subs = new ArrayList<>();
                 inputObject.nextLine(); // blank line
                 String subRegionName = inputObject.nextLine();
                 String regionName = inputObject.nextLine();
@@ -61,24 +69,50 @@ public class ElectoralMap{
 
                 Subregion s = new Subregion(xPoints,yPoints);
                 subs.add(s);
-                StdDraw.filledPolygon(xPoints, yPoints);
 
                 if(table.containsKey(regionName)){
                     if(table.get(regionName).containsKey(subRegionName)){
-                        table.get(regionName).get(subRegionName).add(s);
+                        table.get(regionName).put(subRegionName,subs);
+
                     }
                 }
                 else{
-                    HashMap<String, ArrayList> newMap = new HashMap<>();
+                    HashMap<String, ArrayList<Subregion>> newMap = new HashMap<>();
                     newMap.put(subRegionName,subs);
-                    table.get(regionName).put(subRegionName,newMap);
+                    table.get(regionName).put(subRegionName,subs);
                 }
             }
             inputObject.close();
-            //table.put(regionName, subs);
+            for(String key:table.keySet()){
+                for(String in: table.get(key).keySet()){
+                    for(Subregion x: table.get(key).get(in)){
+                        StdDraw.polygon(x.getxCors(),x.getyCors());
+                    }
+                }
+            }
+        }
+
+        public void drawWithVotes(String fileName, String year) throws  Exception{
+            File inputFile = new File("input/" + fileName+year);
+            Scanner inputObject = new Scanner(inputFile);
+            inputObject.nextLine(); // first line of election stuff
+
+            while(inputObject.hasNextLine()) {
+                String line = inputObject.nextLine();
+                String[] lines = line.split(",");
+                String key = lines[0];
+
+                //table.get("USA").get(key)
+            }
         }
 
     public ElectoralMap(){
+
+    }
+
+    public static void main(String[] args) throws Exception {
+        ElectoralMap balls = new ElectoralMap();
+        balls.getGeoData("GA.txt");
 
     }
 }
