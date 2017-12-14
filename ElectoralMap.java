@@ -22,7 +22,7 @@ public class ElectoralMap{
         public Subregion(double[] xs, double[] ys, String tname) {
             xCors = xs;
             yCors = ys;
-
+            name = tname;
         }
 
         public double[] getxCors(){
@@ -43,7 +43,17 @@ public class ElectoralMap{
         public String getName(){
             return name;
         }
-    }
+        public void setColor(){
+            if(demVotes > repVotes && demVotes > indVotes)
+                color = StdDraw.BLUE;
+            else if(repVotes > demVotes && repVotes > indVotes)
+                color = StdDraw.RED;
+            else
+                color = StdDraw.GREEN;
+            }
+
+        }
+
 
         public void getGeoData(String fileName, String date) throws Exception {
             double[] bounds = new double[4];
@@ -93,49 +103,7 @@ public class ElectoralMap{
                 }
             }
             inputObject.close();
-            for (String key : table.keySet()) {
-                for (String subKey : table.get(key).keySet()) {
-                    File inputF = new File("input/" + key + date + ".txt");
-                    int counter = 0;
-                    Scanner inputO = new Scanner(inputF);
-                    inputO.nextLine(); //first line of election stuff
-                    while (inputO.hasNextLine()) {
-                        String line = inputO.nextLine();
-                        String[] lines = line.split(",");
-                        String nameOf = lines[0];
-                        //table.get(key).get(subKey)
 
-                        for (Subregion subreg : table.get(key).get(subKey)) {
-                            if (nameOf.equals(subreg.getName())) {
-                                int rVotes = Integer.parseInt(lines[1]);
-                                int dVotes = Integer.parseInt(lines[2]);
-                                int iVotes = Integer.parseInt(lines[3]);
-                                table.get(key).get(subKey).get(counter).setDemVotes(dVotes);
-                                table.get(key).get(subKey).get(counter).setDemVotes(rVotes);
-                                table.get(key).get(subKey).get(counter).setDemVotes(iVotes);
-                                String decision = addVotes(rVotes, dVotes, iVotes);
-                                System.out.println("about to if");
-                                if (decision.equals("r")) {
-                                    StdDraw.setPenColor(StdDraw.RED);
-                                } else if (decision.equals("d")) {
-                                    StdDraw.setPenColor(StdDraw.BLUE);
-                                } else {
-                                    StdDraw.setPenColor(StdDraw.GREEN);
-                                }
-                            }
-                        }
-                    }
-                    inputO.close();
-                }
-
-                for (String keyd : table.keySet()) {
-                    for (String in : table.get(keyd).keySet()) {
-                        for (Subregion x : table.get(keyd).get(in)) {
-                            StdDraw.filledPolygon(x.getxCors(), x.getyCors());
-                        }
-                    }
-                }
-            }
         }
     public String addVotes(int rep, int dem, int ind){
         if(rep > dem && rep > ind){
@@ -149,6 +117,39 @@ public class ElectoralMap{
         }
 
     }
+
+    public void getVote(String region, String date) throws Exception{
+        for(String biggestRegion: table.keySet()){
+            File file = new File("input/" + region + date + ".txt");
+            Scanner inputObject = new Scanner(file);
+            inputObject.nextLine(); //get rid of first line
+            while(inputObject.hasNextLine()) {
+                String line = inputObject.nextLine();
+                String[] lines = line.split(",");
+                String countyName = lines[0];
+                for (Subregion subreg : table.get(biggestRegion).get(countyName)) {
+                    subreg.setRepVotes(Integer.parseInt(lines[1]));
+                    subreg.setDemVotes(Integer.parseInt(lines[2]));
+                    subreg.setIndVotes(Integer.parseInt(lines[3]));
+                    subreg.setColor();
+                }
+            }
+            inputObject.close();
+        }
+    }
+
+    public void visualize() {
+        for (String state : table.keySet()) {
+            for (String county : table.get(state).keySet()) {
+                for (Subregion x : table.get(state).get(county)) {
+                    StdDraw.setPenColor(x.color);
+                    StdDraw.filledPolygon(x.getxCors(), x.getyCors());
+                }
+            }
+        }
+
+    }
+
     public ElectoralMap(){
 
     }
@@ -156,5 +157,10 @@ public class ElectoralMap{
     public static void main(String[] args) throws Exception {
         ElectoralMap balls = new ElectoralMap();
         balls.getGeoData("GA","2016");
+        balls.getVote("GA","2016");
+        balls.visualize();
+        System.out.println(table.get("GA").keySet());
+
+        //TAYLOR AND BROOKS COUNTY ARE MISSING
     }
 }
