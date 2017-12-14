@@ -31,7 +31,7 @@ public class ElectoralMap{
         }
     }
 
-        public void getGeoData(String fileName) throws Exception{
+        public void getGeoData(String fileName, String date) throws Exception{
             double[] bounds = new double[4];
             File inputFile = new File("input/" + fileName);
             Scanner inputObject = new Scanner(inputFile);
@@ -47,8 +47,6 @@ public class ElectoralMap{
             StdDraw.setYscale(bounds[1],bounds[3]);
 
             double subRegions = Double.parseDouble(inputObject.nextLine()); //subregions
-
-
             while(inputObject.hasNextLine()){
                 ArrayList<Subregion> subs = new ArrayList<>();
                 inputObject.nextLine(); // blank line
@@ -66,23 +64,41 @@ public class ElectoralMap{
                     double y1 = Double.parseDouble(line[1]);
                     yPoints[i] = y1;
                 }
-
                 Subregion s = new Subregion(xPoints,yPoints);
                 subs.add(s);
-
                 if(table.containsKey(regionName)){
                     if(table.get(regionName).containsKey(subRegionName)){
                         table.get(regionName).put(subRegionName,subs);
-
+                        System.out.println("went through if");
+                    }
+                    else{
+                        table.get(regionName).put(subRegionName, subs);
                     }
                 }
                 else{
                     HashMap<String, ArrayList<Subregion>> newMap = new HashMap<>();
                     newMap.put(subRegionName,subs);
-                    table.get(regionName).put(subRegionName,subs);
+                    table.put(regionName,newMap);
+                    System.out.println("went through else");
                 }
             }
             inputObject.close();
+            for(String key:table.keySet()){
+                File inputF = new File("input/" + key+date+".txt");
+                Scanner inputO = new Scanner(inputF);
+                inputObject.nextLine(); // first line of election stuff
+
+                while(inputObject.hasNextLine()) {
+                    String line = inputObject.nextLine();
+                    String[] lines = line.split(",");
+                    String kee = lines[0];
+
+                    //table.get(key).get(kee)
+
+                }
+
+            }
+
             for(String key:table.keySet()){
                 for(String in: table.get(key).keySet()){
                     for(Subregion x: table.get(key).get(in)){
@@ -95,15 +111,9 @@ public class ElectoralMap{
         public void drawWithVotes(String fileName, String year) throws  Exception{
             File inputFile = new File("input/" + fileName+year);
             Scanner inputObject = new Scanner(inputFile);
-            inputObject.nextLine(); // first line of election stuff
 
-            while(inputObject.hasNextLine()) {
-                String line = inputObject.nextLine();
-                String[] lines = line.split(",");
-                String key = lines[0];
 
-                //table.get("USA").get(key)
-            }
+
         }
 
     public ElectoralMap(){
@@ -113,6 +123,5 @@ public class ElectoralMap{
     public static void main(String[] args) throws Exception {
         ElectoralMap balls = new ElectoralMap();
         balls.getGeoData("GA.txt");
-
     }
 }
