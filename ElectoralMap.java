@@ -1,3 +1,5 @@
+import com.sun.org.apache.bcel.internal.generic.ARRAYLENGTH;
+
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -92,31 +94,23 @@ public class ElectoralMap{
                 subs.add(s);
                 if (table.containsKey(regionName)) {
                     if (table.get(regionName).containsKey(subRegionName)) {
-                        table.get(regionName).put(subRegionName, subs);
+                        table.get(regionName).get(subRegionName).add(s);
                     } else {
-                        table.get(regionName).put(subRegionName, subs);
+                        ArrayList<Subregion> subl = new ArrayList<>();
+                        subl.add(s);
+                        table.get(regionName).put(subRegionName, subl);
                     }
                 } else {
                     HashMap<String, ArrayList<Subregion>> newMap = new HashMap<>();
-                    newMap.put(subRegionName, subs);
+                    ArrayList<Subregion> subList = new ArrayList<>();
+                    subList.add(s);
+                    newMap.put(subRegionName, subList);
                     table.put(regionName, newMap);
                 }
             }
             inputObject.close();
 
         }
-    public String addVotes(int rep, int dem, int ind){
-        if(rep > dem && rep > ind){
-            return "r";
-        }
-        else if(dem > rep && dem > ind){
-            return "d";
-        }
-        else{
-            return "i";
-        }
-
-    }
 
     public void getVote(String region, String date) throws Exception{
         for(String biggestRegion: table.keySet()){
@@ -156,10 +150,10 @@ public class ElectoralMap{
 
     public static void main(String[] args) throws Exception {
         ElectoralMap balls = new ElectoralMap();
-        balls.getGeoData("GA","2016");
-        balls.getVote("GA","2016");
+        balls.getGeoData("USA-county","2016");
+        balls.getVote("USA-county","2016");
         balls.visualize();
-        System.out.println(table.get("GA").keySet());
+        //System.out.println(table.get("GA").keySet());
 
         //TAYLOR AND BROOKS COUNTY ARE MISSING
     }
