@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<GridPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          alignment="CENTER"
+          fx:controller="Main"
+          prefHeight="400.0" prefWidth="600.0">
+
+        <padding><Insets right = "25" left = "25" top = "25" bottom = "25"/> </padding>
+        <Label text = "Enter Region Below" GridPane.columnIndex="3" GridPane.rowIndex="1" prefHeight="20" prefWidth="200"/>
+        <TextField fx:id = "regionField" GridPane.columnIndex="3" GridPane.rowIndex="2" prefHeight="20" prefWidth="200"/>
+        <Label text = "Enter Year Below" GridPane.columnIndex="3" GridPane.rowIndex="3" prefHeight="20" prefWidth="100"/>
+        <TextField fx:id = "yearField" GridPane.columnIndex="3" GridPane.rowIndex="4" prefHeight="20" prefWidth="100"/>
+        <Button fx:id = "button" text = "DRAW IT" GridPane.columnIndex="3" GridPane.rowIndex="5" onAction="#draw" />
+        <ChoiceBox fx:id = "chooser"
+
+
+
+</GridPane>
